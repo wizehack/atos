@@ -1,0 +1,18 @@
+{
+    "author" : {
+        "name": "hyunsang.youn",
+        "email": "wizehack@gmail.com"
+    },
+    "dependencies": {
+        "request": "*",
+        "express": "4.14",
+        "body-parser": "*",
+        "mongodb": "~2.0"
+    },
+    "description": "myNode Project package.json",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/username/repository.git"
+    }
+}

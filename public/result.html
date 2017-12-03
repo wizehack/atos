@@ -1,0 +1,55 @@
+<html>
+    <head>
+        <title>Test Result</title>
+        <meta charset="UTF-8">
+        <style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+    text-align: left;
+}
+        </style>
+        <script>
+
+function init() {
+    testcases = document.querySelector('#testcases');
+    table = testcases.querySelector('#table');
+
+    if(table == null) {
+        alert('null');
+    }
+
+    document.querySelector('#all').addEventListener('click', showHandler);
+    document.querySelector('#add').addEventListener('click', addHandler);
+    document.querySelector('#del').addEventListener('click', deleteHandler);
+}
+
+window.addEventListener('load', init);
+        </script>
+    </head>
+    <body>
+        <h1> Automatic Verification </h1>
+        <h3 id="testId"> Test: &nbsp</h3>
+        <div id="testcases">
+            <table id ='table'>
+                <tr>
+                    <th>Num</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Passed</th>
+                </tr>
+            </table>
+        </div>
+
+        <hr />
+        <h1> Manual Verification </h1>
+        <hr />
+        <div id="btnitem">
+            <button id="save"> Save </button>
+            <button id="delete"> Delete </button>
+        </div>
+    </body>
+</html>

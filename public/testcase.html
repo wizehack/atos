@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>Testcase</title>
+        <meta charset="UTF-8">
+        <style>
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="./testcase.js"></script>
+    </head>
+    <body>
+        <h1> Test Case </h1>
+        <hr />
+        <form id = "form">
+            <h3> ID &nbsp
+                <input id="tcid" type="text">
+            </h3>
+            <h3> Name &nbsp
+                <input id="name" type="text">
+            </h3>
+            <h3> Tags &nbsp
+                <input id="tags" type="text"> 
+            </h3>
+            <h3> Verification Type &nbsp
+                <select id="VerificationType">
+                    <option value="Auto"> Auto </option>
+                    <option value="Manual"> Manual </option>
+                </select>
+            </h3>
+            <h3> Description </h3>
+            <textarea id="description" enabled cols="70" rows="10"></textarea>
+            <h3> Copy Your Test Scenario </h3>
+            <textarea id="scenario" enabled cols="100" rows="10"></textarea>
+        </form>
+        <hr />
+        <div id="btnitem">
+            <button id="save"> Save </button>
+            <button id="cancel"> Cancel </button>
+            <br>
+        </div>
+    </body>
+</html>
