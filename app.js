@@ -28,6 +28,6 @@ var tcRouter = require('./routes/tcRouter')(app, TestCase);
 var resultRouter = require('./routes/resultRouter')(app, TestSuite);
 
 app.listen(52270, function () {
-    var ip = '52.39.36.22';
+    var ip = '127.0.0.1';
     console.log('Server Running at http://' + ip + ':' + port);
 });
