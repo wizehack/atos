@@ -1,7 +1,8 @@
 # atos
 Automatic Testing Of Software
 
-#Install
+Install Guide
+
 sudo apt-get install mongodb
 npm install mongoose
 npm install
