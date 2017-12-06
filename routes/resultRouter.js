@@ -48,8 +48,10 @@ module.exports = function(app, TestSuite) {
     });
 
     app.put('/update/testsuite/:id', function(req, res){
+        console.log(req.body);
         TestSuite.update({ id: req.params.id }, { $set: req.body }, function(err, output){
             if(err) {
+                console.log('err: ' + err);
                 res.status(500).json({ error: 'database failure' });
             }
 
