@@ -4,8 +4,65 @@ var tcname = null;
 var tags = null;
 var VerificationType = null;
 var description = null;
-var scenario = null;
+var output = null;
 var bTemplate = false;
+var table = null;
+
+function addRow(tableID) {
+
+    var table = document.querySelector('#'+tableID);
+
+    var rowCount = table.rows.length;
+    var row = table.insertRow(rowCount);
+
+    var colCount = table.rows[0].cells.length;
+
+    for(var i=0; i<colCount; i++) {
+
+        var newcell = row.insertCell(i);
+
+        newcell.innerHTML = table.rows[1].cells[i].innerHTML;
+        //alert(newcell.innerHTML);
+        switch(newcell.childNodes[0].type) {
+            case "text":
+                newcell.childNodes[0].value = '';
+                break;
+            case "checkbox":
+                newcell.childNodes[0].checked = false;
+                break;
+        }
+    }
+}
+
+function deleteRow(tableID) {
+    try {
+        var table = document.querySelector('#'+tableID);
+        var rowCount = table.rows.length;
+
+        for(var i=0; i<rowCount; i++) {
+            var row = table.rows[i];
+            var chkbox = row.cells[0].childNodes[0];
+            if(null != chkbox && true == chkbox.checked) {
+                if(rowCount <= 1) {
+                    alert("Cannot delete all the rows.");
+                    break;
+                }
+                table.deleteRow(i);
+                rowCount--;
+                i--;
+            }
+
+
+        }
+    }catch(e) {
+        alert(e);
+    }
+}
+
+function exportTo(tableID) {
+    var steps = getScenario(tableID);
+    output.value = JSON.stringify(steps);
+}
 
 function clearScreen() {
     tcid.value = '';
@@ -13,7 +70,7 @@ function clearScreen() {
     tags.value = '';
     VerificationType.value = '';
     description.value = '';
-    scenario.value = '';
+    output.value = '';
 };
 
 function ajaxJSONHandler() {
@@ -39,7 +96,7 @@ function saveHandler() {
         testcase.autoVerification = false;
     testcase.description = description.value;
 
-    var array = $.parseJSON(scenario.value);
+    var array = $.parseJSON(output.value);
     console.log('array size: ' + array.length);
     testcase.scenario = array;
 
@@ -62,6 +119,31 @@ function saveHandler() {
     }
 };
 
+function getScenario(tableID) {
+    var table = document.querySelector('#'+tableID);
+    var stepArray = [];
+    var rowLength = table.rows.length;
+    for (var i = 1; i < rowLength; i++){
+        var step = {};
+        var cells = table.rows.item(i).cells;
+        var cellLength = cells.length;
+        for(var j = 0; j < cellLength; j++){
+            var cellVal = cells.item(j).querySelector("input").value
+            if(j === 1) {
+                step.input = cellVal;
+            } else if (j === 2) {
+                step.expectedOutput = cellVal;
+            } else if (j === 3) {
+                step.expectedFile = cellVal;
+            }
+        }
+
+        stepArray[i-1] = step;
+    }
+
+    return stepArray;
+};
+
 function cancelHandler() {
     clearScreen();
 };
@@ -80,7 +162,7 @@ function initScreen() {
     tags.value = 'tag1;tag2';
     VerificationType.value = 'Auto';
     description.value = 'describe about your testcase';
-    scenario.value = '[{"input":"input step 1", "expectedOutput": "input file path if it is manual", "outputType":"image"},{"input":"input step 2"}, {"expectedOutput": "input file path if it is manual", "outputType":"text"}]';
+    output.value = '';
 };
 
 function init() {
@@ -89,7 +171,7 @@ function init() {
     tags = document.querySelector('#tags');
     VerificationType = document.querySelector('#VerificationType');
     description = document.querySelector('#description');
-    scenario = document.querySelector('#scenario');
+    output = document.querySelector('#output');
 
     document.querySelector('#save').addEventListener('click', saveHandler);
     document.querySelector('#cancel').addEventListener('click', cancelHandler);

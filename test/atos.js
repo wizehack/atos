@@ -118,7 +118,7 @@ function runStep(step) {
                 }
             }
 
-            if(step.outputType === 'file') {
+            if(step.ExpectedFile) {
                 //        uploadFiles.push(step.fileName);
             }
 

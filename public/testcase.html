@@ -29,7 +29,26 @@
             <h3> Description </h3>
             <textarea id="description" enabled cols="70" rows="10"></textarea>
             <h3> Copy Your Test Scenario </h3>
-            <textarea id="scenario" enabled cols="100" rows="10"></textarea>
+            <input type="button" value="Add Row" onclick="addRow('dataTable')" />
+            <input type="button" value="Delete Row" onclick="deleteRow('dataTable')" />
+            <input type="button" value="Export" onclick="exportTo('dataTable')" />
+            <table id="dataTable" width="350px" border="1">
+                <tr>
+                    <th>  </th>
+                    <th>Input</th>
+                    <th>ExpectedOutput</th>
+                    <th>ExpectedFile</th>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="chk"/></td>
+                    <td><input type="text" name="input"/></td>
+                    <td><input type="text" name="expectedOutput"/></td>
+                    <td><input type="text" name="expectedFile"/></td>
+                </tr>
+            </table>
+
+            <h3> Export </h3>
+            <textarea id="output" enabled cols="100" rows="10"></textarea>
         </form>
         <hr />
         <div id="btnitem">
