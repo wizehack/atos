@@ -7,12 +7,13 @@
         "request": "*",
         "express": "4.14",
         "body-parser": "*",
-        "mongodb": "~2.0"
+        "mongodb": "~2.0",
+        "mkdirp" : "0.5.1"
     },
-    "description": "myNode Project package.json",
+    "description": "Automatic Testing Of Software",
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "git://github.com/username/repository.git"
+        "url": "https://github.com/wizehack/atos.git"
     }
 }
