@@ -3,6 +3,7 @@ var run = true;
 var testsuiteId = null;
 var testsuiteAPI = '/get/testsuite/';
 var reportAPI = '/update/testsuite/'
+var uploadResultAPI = '/uploadResult/'
 var testsuiteURL = null;
 var serverURL = null;
 var cmd = null;
@@ -118,8 +119,11 @@ function runStep(step) {
                 }
             }
 
-            if(step.ExpectedFile) {
-                //        uploadFiles.push(step.fileName);
+            if(step.expectedFile) {
+                uploadFiles.push(step.fileName);
+                var fileName = getFileName(step.fileName);
+                step.fileName = '<a href="' + serverURL + '/data/' +
+                    testsuiteId + '/' + fileName+ '"> review</a>'
             }
 
             console.log('runcnt: ' + runCnt + ' maxCnt: ' + maxCnt);
@@ -149,4 +153,25 @@ function report(result) {
         }
     });
 };
+
+function upload(filePath) {
+    var fileName = getFileName(filePath);
+    var url = serverURL + uploadResultAPI + testsuiteId + '/' + fileName;
+    var putCMD = 'curl -X POST ' + url + ' -T ' + '"' + filePath + '"';
+    console.log(putCMD);
+
+    exec(putCMD, function(error, stdout, stderr) {
+        if(stdout) {
+            console.log(stdout);
+        } else if (stderr){
+            console.log(stderr);
+        }
+    });
+};
+
+function getFileName(filePath) {
+    var sepr = filePath.lastIndexOf("/");
+    return filePath.substr(sept+1);
+};
+
 //console.log(server);
