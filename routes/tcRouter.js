@@ -133,7 +133,7 @@ function getTestCaseHtml(testcase) {
 
         '<h3> Test Scenario </h3>' + 
 
-        '<textarea id="scenario" enabled cols="100" rows="10">' +
+        '<textarea id="output" enabled cols="100" rows="10">' +
         JSON.stringify(testcase.scenario) + 
         '</textarea><hr />' +
         '<div id="btnitem">' +
