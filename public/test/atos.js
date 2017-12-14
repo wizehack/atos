@@ -1,4 +1,4 @@
-var exec = exec = require('child_process').exec;
+var exec = require('child_process').exec;
 var run = true;
 var testsuiteId = null;
 var testsuiteAPI = '/get/testsuite/';
@@ -11,8 +11,6 @@ var testsuite = null;
 var resultURL = null;
 var uploadList = [];
 var runList = [];
-//var runCnt = 0;
-//var maxCnt = 0;
 
 var cmd = 'nodejs atos.js --server url --id id';
 process.argv.forEach(function (val, index, array) {
@@ -55,6 +53,7 @@ if(run) {
     exec(cmd, function(error, stdout, stderr) {
 
         if(stdout) {
+            console.log(stdout);
             testsuite = JSON.parse(stdout);
         }
         else {
@@ -69,11 +68,9 @@ if(run) {
             var endPoint = testsuiteURL.indexOf(id);
             var url = testsuiteURL.substr(startPoint, endPoint);
             resultURL = url + 'html/' + id;
-
-            var tcList = testsuite.list;
             delete testsuite._id;
-            for(var i=0; i<tcList.length; i++) {
-                var testcase = tcList[i];
+            for(var i=0; i<testsuite.list.length; i++) {
+                var testcase = testsuite.list[i];
                 var scenario = testcase.scenario;
                 delete testcase._id;
                 for(var j=0; j<scenario.length; j++) {
@@ -82,9 +79,7 @@ if(run) {
                 } //for j
             } // for i
 
-            var index = 0;
             runAllStep();
-//            uploadAllFiles();
         }
 
     });
@@ -93,28 +88,41 @@ if(run) {
 function runAllStep() {
     if(runList.length) {
         var step = runList[0];
-        console.log(step.input);
+        var uploadCMD = null;
 
         if(step.expectedFile) {
-            console.log('expectedFile: ' + step.expectedFile);
+            //console.log('expectedFile: ' + step.expectedFile);
             //uploadList.push(step.fileName);
             var fileName = getFileName(step.expectedFile);
             var url = serverURL + uploadResultAPI + testsuiteId + '/' + fileName;
-            var uploadCMD = 'curl -X POST ' + url + ' -T ' + '"' + step.expectedFile + '"';
-            step.input = step.input + '; ' + uploadCMD;
-
-            step.outputFile = '<a href="' + serverURL + '/data/' +
-                testsuiteId + '/' + fileName+ '"> review</a>'
+            uploadCMD = 'curl -X POST ' + url + ' -T ' + '"' + step.expectedFile + '"';
+            step.outputFile = serverURL + '/data/' + testsuiteId + '/' + fileName;
+        } else {
+            step.expectedFile = null;
         }
 
         exec(step.input, function(error, stdout, stderr) {
+            console.log(step.input);
 
             if(stdout) {
                 console.log(stdout);
                 step.output = stdout;
-            } else if (stderr){
-                console.log(stderr);
-                step.output = stderr;
+            } else if (error){
+                console.log(error);
+                step.output = error;
+            }
+
+            if(uploadCMD) {
+                exec(uploadCMD, function(error, stdout, stderr) {
+                    console.log(uploadCMD);
+                    if(stdout) {
+                        console.log(stdout);
+                        step.output = stdout;
+                    } else if (error){
+                        console.log('ERROR: ' + error);
+                        step.output = error;
+                    }
+                });
             }
 
             if(step.expectedOutput) {
@@ -124,6 +132,8 @@ function runAllStep() {
                 } else {
                     step.success = false;
                 }
+            } else {
+                step.expectedOutput = null;
             }
 
             runList.shift();
@@ -133,53 +143,6 @@ function runAllStep() {
         report(testsuite);
     }
 }
-
-/*
-function runStep(step) {
-    step.output = null;
-    step.performed = false;
-
-    if(step.input) {
-        exec(step.input, function(error, stdout, stderr) {
-            console.log(step.input);
-            runCnt++;
-            step.performed = true;
-            if(stdout) {
-                console.log(stdout);
-                step.output = stdout;
-            } else if (stderr){
-                console.log(stderr);
-                step.output = stderr;
-            }
-
-            if(step.expectedOutput) {
-                console.log('expectedOutput: ' + step.expectedOutput);
-                if(step.expectedOutput === step.output) {
-                    step.success = true;
-                } else {
-                    step.success = false;
-                }
-            }
-
-            if(step.expectedFile) {
-                console.log('expectedFile: ' + step.fileName);
-                uploadList.push(step.fileName);
-                var fileName = getFileName(step.fileName);
-                step.fileName = '<a href="' + serverURL + '/data/' +
-                    testsuiteId + '/' + fileName+ '"> review</a>'
-            }
-
-            console.log('runcnt: ' + runCnt + ' maxCnt: ' + maxCnt);
-            if(runCnt === maxCnt) {
-                report(testsuite);
-            }
-        });
-    }
-    else {
-        console.log('error: testinput is NOT found');
-    }
-};
-*/
 
 function report(result) {
     var url = serverURL + reportAPI + testsuiteId;
@@ -200,29 +163,6 @@ function report(result) {
     });
 };
 
-/*
-function uploadAllFiles() {
-    for(var i=0; i<uploadList.length; i++) {
-        upload(uploadList[i]);
-    }
-};
-*/
-
-function upload(filePath) {
-    var fileName = getFileName(filePath);
-    var url = serverURL + uploadResultAPI + testsuiteId + '/' + fileName;
-    var putCMD = 'curl -X POST ' + url + ' -T ' + '"' + filePath + '"';
-    console.log(putCMD);
-
-    exec(putCMD, function(error, stdout, stderr) {
-        if(stdout) {
-            console.log(stdout);
-        } else if (stderr){
-            console.log(stderr);
-        }
-    });
-};
-
 function getFileName(filePath) {
     if(filePath) {
         var sepr = filePath.lastIndexOf("/");
@@ -231,5 +171,3 @@ function getFileName(filePath) {
 
     return filePath;
 };
-
-//console.log(server);

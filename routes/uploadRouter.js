@@ -3,7 +3,7 @@ module.exports = function(app, fs, mkdirp, homeDir) {
         var testsuiteId = req.params.id;
         var filename = req.params.file;
         var body = '';
-        var path = homeDir + '/data' + '/' + testsuiteId;
+        var path = homeDir + '/public/data' + '/' + testsuiteId;
 
         if (fs.existsSync(path) === false) {
             console.log('new: ' + path);
@@ -20,7 +20,6 @@ module.exports = function(app, fs, mkdirp, homeDir) {
         path = path + '/' + filename;
 
         req.on('data', function(data) {
-            console.log('data: ' + data);
             body += data;
         });
 
