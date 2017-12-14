@@ -9,9 +9,10 @@ var serverURL = null;
 var cmd = null;
 var testsuite = null;
 var resultURL = null;
-var uploadFiles = [];
-var runCnt = 0;
-var maxCnt = 0;
+var uploadList = [];
+var runList = [];
+//var runCnt = 0;
+//var maxCnt = 0;
 
 var cmd = 'nodejs atos.js --server url --id id';
 process.argv.forEach(function (val, index, array) {
@@ -75,32 +76,72 @@ if(run) {
                 var testcase = tcList[i];
                 var scenario = testcase.scenario;
                 delete testcase._id;
-                maxCnt = maxCnt + scenario.length;
-
-                console.log('MAX: ' + maxCnt);
-                console.log('step: ' + scenario.length);
-
-                console.log('----------------------');
-                console.log('TCID: ' + testcase.id);
-                console.log('----------------------');
                 for(var j=0; j<scenario.length; j++) {
                     var step = scenario[j];
-                    console.log('execute testInput');
-                    runStep(step);
+                    runList.push(step);
                 } //for j
             } // for i
+
+            var index = 0;
+            runAllStep();
+//            uploadAllFiles();
         }
 
     });
 }
 
+function runAllStep() {
+    if(runList.length) {
+        var step = runList[0];
+        console.log(step.input);
+
+        if(step.expectedFile) {
+            console.log('expectedFile: ' + step.expectedFile);
+            //uploadList.push(step.fileName);
+            var fileName = getFileName(step.expectedFile);
+            var url = serverURL + uploadResultAPI + testsuiteId + '/' + fileName;
+            var uploadCMD = 'curl -X POST ' + url + ' -T ' + '"' + step.expectedFile + '"';
+            step.input = step.input + '; ' + uploadCMD;
+
+            step.outputFile = '<a href="' + serverURL + '/data/' +
+                testsuiteId + '/' + fileName+ '"> review</a>'
+        }
+
+        exec(step.input, function(error, stdout, stderr) {
+
+            if(stdout) {
+                console.log(stdout);
+                step.output = stdout;
+            } else if (stderr){
+                console.log(stderr);
+                step.output = stderr;
+            }
+
+            if(step.expectedOutput) {
+                console.log('expectedOutput: ' + step.expectedOutput);
+                if(step.expectedOutput === step.output) {
+                    step.success = true;
+                } else {
+                    step.success = false;
+                }
+            }
+
+            runList.shift();
+            runAllStep();
+        });
+    } else {
+        report(testsuite);
+    }
+}
+
+/*
 function runStep(step) {
     step.output = null;
     step.performed = false;
 
     if(step.input) {
-        console.log(step.input);
         exec(step.input, function(error, stdout, stderr) {
+            console.log(step.input);
             runCnt++;
             step.performed = true;
             if(stdout) {
@@ -112,6 +153,7 @@ function runStep(step) {
             }
 
             if(step.expectedOutput) {
+                console.log('expectedOutput: ' + step.expectedOutput);
                 if(step.expectedOutput === step.output) {
                     step.success = true;
                 } else {
@@ -120,7 +162,8 @@ function runStep(step) {
             }
 
             if(step.expectedFile) {
-                uploadFiles.push(step.fileName);
+                console.log('expectedFile: ' + step.fileName);
+                uploadList.push(step.fileName);
                 var fileName = getFileName(step.fileName);
                 step.fileName = '<a href="' + serverURL + '/data/' +
                     testsuiteId + '/' + fileName+ '"> review</a>'
@@ -136,12 +179,15 @@ function runStep(step) {
         console.log('error: testinput is NOT found');
     }
 };
+*/
 
 function report(result) {
     var url = serverURL + reportAPI + testsuiteId;
     var data = JSON.stringify(result);
-    data = data.replace(/"/g, '\\"');
+    console.log('#####################################');
     console.log(data);
+    console.log('#####################################');
+    data = data.replace(/"/g, '\\"');
     var putCMD = 'curl -X PUT -H "Content-Type:application/json" ' + url + ' -d ' + '"' + data + '"';
     console.log(putCMD);
 
@@ -153,6 +199,14 @@ function report(result) {
         }
     });
 };
+
+/*
+function uploadAllFiles() {
+    for(var i=0; i<uploadList.length; i++) {
+        upload(uploadList[i]);
+    }
+};
+*/
 
 function upload(filePath) {
     var fileName = getFileName(filePath);
@@ -170,8 +224,12 @@ function upload(filePath) {
 };
 
 function getFileName(filePath) {
-    var sepr = filePath.lastIndexOf("/");
-    return filePath.substr(sept+1);
+    if(filePath) {
+        var sepr = filePath.lastIndexOf("/");
+        return filePath.substr(sepr+1);
+    }
+
+    return filePath;
 };
 
 //console.log(server);
