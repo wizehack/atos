@@ -17,8 +17,6 @@ module.exports = function(app, fs, mkdirp, homeDir) {
             });
         }
 
-        path = path + '/' + filename;
-
         req.on('data', function(data) {
             body += data;
         });
