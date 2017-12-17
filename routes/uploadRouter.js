@@ -18,6 +18,7 @@ module.exports = function(app, fs, mkdirp, homeDir) {
         }
 
         req.on('data', function(data) {
+            console.log('####data] ' + data);
             body += data;
         });
 
@@ -54,5 +55,38 @@ module.exports = function(app, fs, mkdirp, homeDir) {
                 }
             }
         });
+    });
+
+    app.post('/uploadResult/image/:id/:file', function (req, res) {
+        var testsuiteId = req.params.id;
+        var filename = req.params.file;
+        var path = homeDir + '/public/data' + '/' + testsuiteId;
+        var file = path + '/' + filename;
+        var body = req.body;
+
+        if (fs.existsSync(path) === false) {
+            console.log('new: ' + path);
+            mkdirp(path, function (err) {
+                if (err) {
+                    console.error(err)
+                }
+                else {
+                    console.log('create: ' + file);
+                    req.pipe(fs.createWriteStream(file));
+                    res.end();
+                }
+            });
+        } else {
+            if (fs.existsSync(file) === true) {
+                console.log('update: ' + file);
+                fs.unlinkSync(file);
+                req.pipe(fs.createWriteStream(file));
+                res.end();
+            } else {
+                console.log('create: ' + file);
+                req.pipe(fs.createWriteStream(file));
+                res.end();
+            }
+        }
     });
 };
