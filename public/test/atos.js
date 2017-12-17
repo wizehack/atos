@@ -9,7 +9,6 @@ var serverURL = null;
 var cmd = null;
 var testsuite = null;
 var resultURL = null;
-var uploadList = [];
 var runList = [];
 
 var cmd = 'nodejs atos.js --server url --id id';
@@ -92,11 +91,22 @@ function runAllStep() {
 
         if(step.expectedFile) {
             //console.log('expectedFile: ' + step.expectedFile);
-            //uploadList.push(step.fileName);
             var fileName = getFileName(step.expectedFile);
-            var url = serverURL + uploadResultAPI + testsuiteId + '/' + fileName;
-            uploadCMD = 'curl -X POST ' + url + ' -T ' + '"' + step.expectedFile + '"';
-            step.outputFile = serverURL + '/data/' + testsuiteId + '/' + fileName;
+            var url = '';
+
+            if(step.fileType === 'Text') {
+                url = serverURL + uploadResultAPI + testsuiteId + '/' + fileName;
+                uploadCMD = 'curl -X POST ' + url + ' -T ' + '"' + step.expectedFile + '"';
+            }
+            else if(step.fileType === 'Image') {
+                url = serverURL + uploadResultAPI + 'image/' + testsuiteId + '/' + fileName;
+                uploadCMD = 'curl -X POST -H ' + '"' + 'Content-Type: application/octet-stream' +
+                    '"' + ' --data-binary ' + '"' + '@' + step.expectedFile + '" ' + url;
+            }
+
+            if(step.fileType !== 'None') {
+                step.outputFile = serverURL + '/data/' + testsuiteId + '/' + fileName;
+            }
         } else {
             step.expectedFile = null;
         }
@@ -112,19 +122,6 @@ function runAllStep() {
                 step.output = error;
             }
 
-            if(uploadCMD) {
-                exec(uploadCMD, function(error, stdout, stderr) {
-                    console.log(uploadCMD);
-                    if(stdout) {
-                        console.log(stdout);
-                        step.output = stdout;
-                    } else if (error){
-                        console.log('ERROR: ' + error);
-                        step.output = error;
-                    }
-                });
-            }
-
             if(step.expectedOutput) {
                 console.log('expectedOutput: ' + step.expectedOutput);
                 if(step.expectedOutput === step.output) {
@@ -136,8 +133,24 @@ function runAllStep() {
                 step.expectedOutput = null;
             }
 
-            runList.shift();
-            runAllStep();
+            if(uploadCMD) {
+                exec(uploadCMD, function(error, stdout, stderr) {
+                    console.log(uploadCMD);
+                    if(stdout) {
+                        console.log(stdout);
+                        step.output = stdout;
+                    } else if (error){
+                        console.log('ERROR: ' + error);
+                        step.output = error;
+                    }
+
+                    runList.shift();
+                    runAllStep();
+                });
+            } else {
+                runList.shift();
+                runAllStep();
+            }
         });
     } else {
         report(testsuite);
