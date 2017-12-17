@@ -128,13 +128,23 @@ function getScenario(tableID) {
         var cells = table.rows.item(i).cells;
         var cellLength = cells.length;
         for(var j = 0; j < cellLength; j++){
-            var cellVal = cells.item(j).querySelector("input").value
+            var tdInput = cells.item(j).querySelector("input");
+            var tdSelect = cells.item(j).querySelector("select");
+
+            if(tdInput) {
+                var cellVal = tdInput.value
+            } else if(tdSelect) {
+                var cellVal = tdSelect.value
+            }
+
             if(j === 1) {
                 step.input = cellVal;
             } else if (j === 2) {
                 step.expectedOutput = cellVal;
             } else if (j === 3) {
                 step.expectedFile = cellVal;
+            } else if (j === 4) {
+                step.fileType = cellVal;
             }
         }
 
