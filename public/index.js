@@ -43,9 +43,13 @@ function ajaxJSONHandler() {
             alert('Error: ' + xhr.status);
         } else {
             var html = '<html><head></head><body>';
-            html += '<a href="/get/testsuite/' + testsuite.id + '"><h2> testsuite json </h2></a>'; 
-            html += '<a href="/get/testsuite/html/' + testsuite.id + '"><h2> testsuite html </h2></a>'; 
-            html += '<a href="/delete/testsuite/' + testsuite.id + '"><h2> delete testsuite </h2></a>'; 
+            html += '<h1> User Guide </h1>';
+            html += '<h2> wget ' + location.host + '/test/atos.js </h2>';
+            html += '<h2> nodejs atos.js --server http://' + location.host + ' --id ' + testsuite.id + '</h2><br></ hr>';
+            html += '<h2> Result </h2>';
+            html += '<h2> URL: http://' + location.host + '/get/testsuite/html/' + testsuite.id + '</h2>';
+            html += '<h2> Delete Result: http://' + location.host + '/delete/testsuite/' + testsuite.id + '</h2>';
+            html += '<h2> Show Json Result: http://' + location.host + '/get/testsuite/' + testsuite.id + '</h2>';
             html += '</body></html>'; 
             document.write(html);
         }
