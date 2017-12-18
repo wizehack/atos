@@ -79,7 +79,7 @@ module.exports = function(app, TestSuite) {
 };
 
 function getTestSuiteHtml(testsuite) {
-    var head = '<head><script src="/testsuite.js"> </script></head>';
+    var head = '<head><style> table { border-collapse: collapse; } table, td, th {    padding: 15px; border: 1px solid black; } </style></head>';
     var body = "<body>";
 
     body += '<h2> TestSuite ID: ' + testsuite.id + '</h2>';
@@ -111,10 +111,76 @@ function getSubHtml(testcase) {
         verificationType +
         '<h3>Result: ' + testcase.result + '</h3>' +
         '<h3>' + 'Step' + '</h3>';
+    subhtml += '<table>';
+    subhtml += '<tr>';
+    subhtml += '<th> </th>';
+    subhtml += '<th> Input </th>';
+    subhtml += '<th> ExpectedOutput </th>';
+    subhtml += '<th> Output </th>';
+    subhtml += '<th> ExpectedFile </th>';
+    subhtml += '<th> FileType </th>';
+    subhtml += '<th> outputFile </th>';
+    subhtml += '<th> Result </th>';
+    subhtml += '</tr>';
 
     for(var i=0; i<testcase.scenario.length; i++) {
-        subhtml += '<h3>' + JSON.stringify(testcase.scenario[i]) + '</h3>';
+        subhtml += getScenarioTable(i, testcase.scenario[i])
     }
 
+    subhtml += '</table>';
+
     return subhtml;
+};
+
+function getScenarioTable(index, step) {
+
+    var tableHtml = '<tr>';
+    index = index+1;
+    tableHtml += '<td>' + index + '</td>';
+
+    if(step.input) {
+        tableHtml += '<td>' + step.input + '</td>';
+    } else {
+        tableHtml += '<td> </td>';
+    }
+
+    if(step.expectedOutput) {
+        tableHtml += '<td>' + step.expectedOutput + '</td>';
+    } else {
+        tableHtml += '<td> </td>';
+    }
+
+    if(step.output) {
+        tableHtml += '<td>' + step.output + '</td>';
+    } else {
+        tableHtml += '<td> </td>';
+    }
+
+    if(step.expectedFile) {
+        tableHtml += '<td>' + step.expectedFile + '</td>';
+    } else {
+        tableHtml += '<td> </td>';
+    }
+
+    if(step.fileType) {
+        tableHtml += '<td>' + step.fileType + '</td>';
+    } else {
+        tableHtml += '<td> </td>';
+    }
+
+    if(step.outputFile) {
+        tableHtml += '<td><a href="' + step.outputFile + '"> Review </a></td>';
+    } else {
+        tableHtml += '<td> </td>';
+    }
+
+    if(step.success) {
+        tableHtml += '<td><font color="green"> Failed </font></td>';
+    } else {
+        tableHtml += '<td><font color="red"> Failed </font></td>';
+    }
+
+    tableHtml += '</tr>';
+
+    return tableHtml;
 };
