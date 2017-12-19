@@ -114,7 +114,7 @@ function runAllStep() {
         exec(step.input, function(error, stdout, stderr) {
             console.log(step.input);
 
-            if(stdout) {
+            if(step.expectedOutput && tstdout) {
                 console.log(stdout);
                 step.output = stdout;
             } else if (error){
@@ -122,7 +122,7 @@ function runAllStep() {
                 step.output = error;
             }
 
-            if(step.expectedOutput) {
+            if(testsuite.autoVerification) {
                 console.log('expectedOutput: ' + step.expectedOutput);
                 if(step.expectedOutput === step.output) {
                     step.success = true;
