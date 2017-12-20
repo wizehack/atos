@@ -114,7 +114,7 @@ function runAllStep() {
         exec(step.input, function(error, stdout, stderr) {
             console.log(step.input);
 
-            if(step.expectedOutput && tstdout) {
+            if(step.expectedOutput && stdout) {
                 console.log(stdout);
                 step.output = stdout;
             } else if (error){

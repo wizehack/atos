@@ -1,4 +1,4 @@
-module.exports = function(app, TestSuite) {
+module.exports = function(app, TestSuite, rimraf, homeDir) {
     app.post('/create/testsuite', function (req, res) {
         var body = req.body;
         var testsuite = new TestSuite();
@@ -64,6 +64,14 @@ module.exports = function(app, TestSuite) {
     });
 
     app.get('/delete/testsuite/:id', function (req, res) {
+        var testsuiteId = req.params.id;
+        var path = homeDir + '/public/data' + '/' + testsuiteId;
+
+        console.log('delete ' + path);
+        rimraf(path, function () {
+            console.log(' deleted');
+        });
+
         TestSuite.remove({id: req.params.id}, function (err, testcase) {
             if(err) {
                 return res.status(500).send({error: 'database find failure'});

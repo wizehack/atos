@@ -1,5 +1,6 @@
 var express = require('express');
 var mkdirp = require('mkdirp');
+var rimraf = require('rimraf');
 var fs = require('fs');
 var app = express();
 var bodyParser = require('body-parser');
@@ -27,7 +28,7 @@ var port = process.env.PORT || 52270;
 
 // configure router
 var tcRouter = require('./routes/tcRouter')(app, TestCase);
-var resultRouter = require('./routes/resultRouter')(app, TestSuite);
+var resultRouter = require('./routes/resultRouter')(app, TestSuite, rimraf, __dirname);
 var uploadRouter = require('./routes/uploadRouter')(app, fs, mkdirp, __dirname);
 
 app.listen(52270, function () {
