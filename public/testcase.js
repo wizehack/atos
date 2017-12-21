@@ -78,7 +78,7 @@ function ajaxJSONHandler() {
         if(xhr.status !== 200) {
             alert('Error: ' + xhr.status);
         } else {
-            var url = '/admin.html';
+            var url = '/index.html';
             location.href = url;
         };
     }

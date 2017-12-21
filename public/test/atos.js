@@ -1,3 +1,4 @@
+var http = require('http');
 var exec = require('child_process').exec;
 var run = true;
 var testsuiteId = null;
@@ -10,6 +11,9 @@ var cmd = null;
 var testsuite = null;
 var resultURL = null;
 var runList = [];
+
+var serverIP = null;
+var port = null;
 
 var cmd = 'nodejs atos.js --server url --id id';
 process.argv.forEach(function (val, index, array) {
@@ -28,6 +32,22 @@ process.argv.forEach(function (val, index, array) {
 
         if(index === 3) {
             serverURL = val;
+            var startPoint = serverURL.indexOf('http://');
+            var endPoint = serverURL.lastIndexOf(':');
+
+            if(startPoint === -1) {
+                startPoint = serverURL.indexOf('https://');
+            }
+
+            if(startPoint === -1) {
+                console.log(cmd);
+            }
+
+            serverIP = serverURL.substring(startPoint+7, endPoint);
+            port = serverURL.substr(endPoint + 1);
+
+            console.log('IP: ' + serverIP);
+            console.log('PORT: ' + port);
         }
 
         if((index === 4) && (val !== '--id')) {
@@ -43,45 +63,51 @@ process.argv.forEach(function (val, index, array) {
     }
 });
 
-cmd = 'curl ' + testsuiteURL;
-
 console.log('GET TESTSUITE');
-console.log(cmd);
 
 if(run) {
-    exec(cmd, function(error, stdout, stderr) {
+    var options = {
+        host: serverIP,
+        path: testsuiteAPI + testsuiteId,
+        port: port,
+        method: 'GET',
+    };
 
-        if(stdout) {
-            console.log(stdout);
-            testsuite = JSON.parse(stdout);
-        }
-        else {
-           console.log('stderr: ' + stderr);
-           console.log(error);
-           return;
-        }
+    var callback = function(response) {
+        var str = '';
 
-        if(testsuite) {
-            var id = testsuite.id;
-            var startPoint = 0;
-            var endPoint = testsuiteURL.indexOf(id);
-            var url = testsuiteURL.substr(startPoint, endPoint);
-            resultURL = url + 'html/' + id;
-            delete testsuite._id;
-            for(var i=0; i<testsuite.list.length; i++) {
-                var testcase = testsuite.list[i];
-                var scenario = testcase.scenario;
-                delete testcase._id;
-                for(var j=0; j<scenario.length; j++) {
-                    var step = scenario[j];
-                    runList.push(step);
-                } //for j
-            } // for i
+        response.on('data', function(chunk) {
+            str += chunk;
+        });
 
-            runAllStep();
-        }
+        response.on('end', function() {
+            console.log(str);
+            testsuite = JSON.parse(str);
 
-    });
+            if(testsuite) {
+                var id = testsuite.id;
+                var startPoint = 0;
+                var endPoint = testsuiteURL.indexOf(id);
+                var url = testsuiteURL.substr(startPoint, endPoint);
+                resultURL = url + 'html/' + id;
+                delete testsuite._id;
+                for(var i=0; i<testsuite.list.length; i++) {
+                    var testcase = testsuite.list[i];
+                    var scenario = testcase.scenario;
+                    delete testcase._id;
+                    for(var j=0; j<scenario.length; j++) {
+                        var step = scenario[j];
+                        runList.push(step);
+                    } //for j
+                } // for i
+
+                runAllStep();
+            }
+        });
+    };
+
+    var req = http.request(options, callback);
+    req.end();
 }
 
 function runAllStep() {
@@ -158,22 +184,37 @@ function runAllStep() {
 }
 
 function report(result) {
-    var url = serverURL + reportAPI + testsuiteId;
-    var data = JSON.stringify(result);
-    console.log('#####################################');
-    console.log(data);
-    console.log('#####################################');
-    data = data.replace(/"/g, '\\"');
-    var putCMD = 'curl -X PUT -H "Content-Type:application/json" ' + url + ' -d ' + '"' + data + '"';
-    console.log(putCMD);
+    var body = JSON.stringify(result);
 
-    exec(putCMD, function(error, stdout, stderr) {
-        if(stdout) {
-            console.log(stdout);
-        } else if (stderr){
-            console.log(stderr);
-        }
-    });
+    var header = {
+        'Content-Type': 'application/json',
+    };
+
+    var options = {
+        host: serverIP,
+        path: reportAPI + testsuiteId,
+        port: port,
+        method: 'PUT',
+        headers: header
+    };
+
+    var callback = function(response) {
+        var str = '';
+
+        response.on('data', function(chunk) {
+            str += chunk;
+        });
+
+        response.on('end', function() {
+            console.log(str);
+        });
+    };
+
+    var req = http.request(options, callback);
+    console.log(body);
+    req.write(body);
+    console.log('sending...');
+    req.end();
 };
 
 function getFileName(filePath) {

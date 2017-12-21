@@ -48,6 +48,7 @@ module.exports = function(app, TestSuite, rimraf, homeDir) {
     });
 
     app.put('/update/testsuite/:id', function(req, res){
+        console.log('/update/testsuite/' + req.params.id);
         console.log(req.body);
         TestSuite.update({ id: req.params.id }, { $set: req.body }, function(err, output){
             if(err) {
