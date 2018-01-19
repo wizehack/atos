@@ -5,7 +5,15 @@ var table = null;
 var tcIdGroup = null;
 var testsuite = null;
 
-function ajaxHTMLHandler() {
+/*
+function ajaxAddHandler() {
+    if(xhr.readyState === 4 && xhr.status === 200) {
+        document.write(xhr.responseText);
+    }
+};
+*/
+
+function ajaxShowHandler() {
     if(xhr.readyState === 4 && xhr.status === 200) {
         testcaseList = JSON.parse(xhr.responseText);
         tcIdGroup = [];
@@ -78,13 +86,19 @@ function getTestCaseHandler() {
 };
 
 function showHandler() {
-    xhr.onreadystatechange = ajaxHTMLHandler;
+    xhr.onreadystatechange = ajaxShowHandler;
     xhr.open('GET', '/get/testcase', true);
     xhr.send();
 };
 
 function addHandler() {
-    var url = '/testcase.html';
+    /*
+    xhr.onreadystatechange = ajaxAddHandler;
+    xhr.open('GET', '/add/testcase/html', true);
+    xhr.send();
+    */
+
+    var url = '/add/testcase/html';
     location.href = url;
 };
 

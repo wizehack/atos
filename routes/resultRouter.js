@@ -184,7 +184,7 @@ function getScenarioTable(index, step) {
     }
 
     if(step.success) {
-        tableHtml += '<td><font color="green"> Failed </font></td>';
+        tableHtml += '<td><font color="green"> Success </font></td>';
     } else {
         tableHtml += '<td><font color="red"> Failed </font></td>';
     }

@@ -1,17 +1,17 @@
-var xhr = new XMLHttpRequest();
+var xhr = null;
 var tcid = null;
 var tcname = null;
 var tags = null;
 var VerificationType = null;
 var description = null;
 var output = null;
-var bTemplate = false;
+//var bTemplate = false;
 var table = null;
+//var addRowHandle = null;
+//var deleteRowHandle = null;
+//var exportHandle = null;
 
-function addRow(tableID) {
-
-    var table = document.querySelector('#'+tableID);
-
+function addRowHandler() {
     var rowCount = table.rows.length;
     var row = table.insertRow(rowCount);
 
@@ -32,11 +32,10 @@ function addRow(tableID) {
                 break;
         }
     }
-}
+};
 
-function deleteRow(tableID) {
+function deleteRowHandler() {
     try {
-        var table = document.querySelector('#'+tableID);
         var rowCount = table.rows.length;
 
         for(var i=0; i<rowCount; i++) {
@@ -51,19 +50,18 @@ function deleteRow(tableID) {
                 rowCount--;
                 i--;
             }
-
-
         }
     }catch(e) {
         alert(e);
     }
-}
+};
 
-function exportTo(tableID) {
-    var steps = getScenario(tableID);
+function exportToHandler() {
+    var steps = getScenario();
     output.value = JSON.stringify(steps);
-}
+};
 
+/*
 function clearScreen() {
     tcid.value = '';
     tcname.value = '';
@@ -72,6 +70,7 @@ function clearScreen() {
     description.value = '';
     output.value = '';
 };
+*/
 
 function ajaxJSONHandler() {
     if(xhr.readyState === 4) {
@@ -82,6 +81,8 @@ function ajaxJSONHandler() {
             location.href = url;
         };
     }
+
+//    xhr = null;
 };
 
 function saveHandler() {
@@ -102,25 +103,39 @@ function saveHandler() {
 
     var body = JSON.stringify(testcase);
 
-    try {
+    try { 
+        xhr = new XMLHttpRequest();
         xhr.onreadystatechange = ajaxJSONHandler;
+
+        var url = '/create/testcase';
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.send(body);
+
+        /*
         if(bTemplate === true){
             var url = '/create/testcase';
             xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            xhr.send(body);
         }
         else {
             var url = '/update/testcase/' + testcase.id;
             xhr.open('PUT', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            xhr.send(body);
         }
-        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        xhr.send(body);
+        */
+        //        xhr.send(testcase);
     } catch (e) {
-        alert("not JSON");
+        alert("not JSON: " + body);
+
+        document.write(e);
     }
 };
 
-function getScenario(tableID) {
-    var table = document.querySelector('#'+tableID);
+function getScenario() {
+//    var table = document.querySelector('#dataTable');
     var stepArray = [];
     var rowLength = table.rows.length;
     for (var i = 1; i < rowLength; i++){
@@ -155,9 +170,12 @@ function getScenario(tableID) {
 };
 
 function cancelHandler() {
-    clearScreen();
+//    clearScreen();
+    var url = '/index.html';
+    location.href = url;
 };
 
+/*
 function isTemplate() {
     if(tcid.value == '') {
         bTemplate = true;
@@ -165,7 +183,9 @@ function isTemplate() {
 
     return bTemplate;
 };
+*/
 
+/*
 function initScreen() {
     tcid.value = 'tc-';
     tcname.value = 'testcase name';
@@ -174,6 +194,7 @@ function initScreen() {
     description.value = 'describe about your testcase';
     output.value = '';
 };
+*/
 
 function init() {
     tcid = document.querySelector('#tcid');
@@ -182,15 +203,19 @@ function init() {
     VerificationType = document.querySelector('#VerificationType');
     description = document.querySelector('#description');
     output = document.querySelector('#output');
+    table = document.querySelector('#dataTable');
 
+    document.querySelector('#addRow').addEventListener('click', addRowHandler);
+    document.querySelector('#deleteRow').addEventListener('click', deleteRowHandler);
+    document.querySelector('#exportTo').addEventListener('click', exportToHandler);
     document.querySelector('#save').addEventListener('click', saveHandler);
     document.querySelector('#cancel').addEventListener('click', cancelHandler);
 
+    /*
     if(isTemplate() === true) {
         initScreen();
     }
+    */
 }
 
 window.addEventListener('load', init);
-
-

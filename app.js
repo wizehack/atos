@@ -32,6 +32,6 @@ var resultRouter = require('./routes/resultRouter')(app, TestSuite, rimraf, __di
 var uploadRouter = require('./routes/uploadRouter')(app, fs, mkdirp, __dirname);
 
 app.listen(52270, function () {
-    var ip = '127.0.0.1';
+    var ip = '52.39.36.22';
     console.log('Server Running at http://' + ip + ':' + port);
 });
