@@ -1,20 +1,21 @@
 {
-    "author" : {
-        "name": "hyunsang.youn",
-        "email": "wizehack@gmail.com"
-    },
-    "dependencies": {
-        "request": "*",
-        "express": "4.14",
-        "body-parser": "*",
-        "mongodb": "~2.0",
-        "mkdirp" : "0.5.1",
-        "rimraf" : "2.5.2"
-    },
-    "description": "Automatic Testing Of Software",
-    "license": "Apache-2.0",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/wizehack/atos.git"
-    }
+  "author": {
+    "name": "hyunsang.youn",
+    "email": "wizehack@gmail.com"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "express": "4.14",
+    "mkdirp": "0.5.1",
+    "mongodb": "~2.0",
+    "mongoose": "^5.0.2",
+    "request": "*",
+    "rimraf": "2.5.2"
+  },
+  "description": "Automatic Testing Of Software",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wizehack/atos.git"
+  }
 }
