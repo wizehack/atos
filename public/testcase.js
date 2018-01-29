@@ -5,11 +5,7 @@ var tags = null;
 var VerificationType = null;
 var description = null;
 var output = null;
-//var bTemplate = false;
 var table = null;
-//var addRowHandle = null;
-//var deleteRowHandle = null;
-//var exportHandle = null;
 
 function addRowHandler() {
     var rowCount = table.rows.length;
@@ -18,11 +14,9 @@ function addRowHandler() {
     var colCount = table.rows[0].cells.length;
 
     for(var i=0; i<colCount; i++) {
-
         var newcell = row.insertCell(i);
-
         newcell.innerHTML = table.rows[1].cells[i].innerHTML;
-        //alert(newcell.innerHTML);
+
         switch(newcell.childNodes[0].type) {
             case "text":
                 newcell.childNodes[0].value = '';
@@ -61,17 +55,6 @@ function exportToHandler() {
     output.value = JSON.stringify(steps);
 };
 
-/*
-function clearScreen() {
-    tcid.value = '';
-    tcname.value = '';
-    tags.value = '';
-    VerificationType.value = '';
-    description.value = '';
-    output.value = '';
-};
-*/
-
 function ajaxJSONHandler() {
     if(xhr.readyState === 4) {
         if(xhr.status !== 200) {
@@ -81,11 +64,9 @@ function ajaxJSONHandler() {
             location.href = url;
         };
     }
-
-//    xhr = null;
 };
 
-function saveHandler() {
+function createHandler() {
     var testcase = {};
     testcase.id = tcid.value;
     testcase.name = tcname.value;
@@ -111,22 +92,6 @@ function saveHandler() {
         xhr.open('POST', url, true);
         xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
         xhr.send(body);
-
-        /*
-        if(bTemplate === true){
-            var url = '/create/testcase';
-            xhr.open('POST', url, true);
-            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-            xhr.send(body);
-        }
-        else {
-            var url = '/update/testcase/' + testcase.id;
-            xhr.open('PUT', url, true);
-            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-            xhr.send(body);
-        }
-        */
-        //        xhr.send(testcase);
     } catch (e) {
         alert("not JSON: " + body);
 
@@ -134,8 +99,42 @@ function saveHandler() {
     }
 };
 
+function updateHandler() {
+    var testcase = {};
+    testcase.id = tcid.value;
+    testcase.name = tcname.value;
+    testcase.tags = tags.value;
+
+    if(VerificationType.value === 'Auto')
+        testcase.autoVerification = true;
+    else
+        testcase.autoVerification = false;
+    testcase.description = description.value;
+
+    var array = $.parseJSON(output.value);
+    console.log('array size: ' + array.length);
+    testcase.scenario = array;
+
+    var body = JSON.stringify(testcase);
+
+    try { 
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = ajaxJSONHandler;
+
+        var url = '/update/testcase/' + testcase.id;
+        xhr.open('PUT', url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.send(body);
+
+    } catch (e) {
+        alert("not JSON: " + body);
+
+        document.write(e);
+    }
+};
+
+
 function getScenario() {
-//    var table = document.querySelector('#dataTable');
     var stepArray = [];
     var rowLength = table.rows.length;
     for (var i = 1; i < rowLength; i++){
@@ -170,31 +169,9 @@ function getScenario() {
 };
 
 function cancelHandler() {
-//    clearScreen();
     var url = '/index.html';
     location.href = url;
 };
-
-/*
-function isTemplate() {
-    if(tcid.value == '') {
-        bTemplate = true;
-    }
-
-    return bTemplate;
-};
-*/
-
-/*
-function initScreen() {
-    tcid.value = 'tc-';
-    tcname.value = 'testcase name';
-    tags.value = 'tag1;tag2';
-    VerificationType.value = 'Auto';
-    description.value = 'describe about your testcase';
-    output.value = '';
-};
-*/
 
 function init() {
     tcid = document.querySelector('#tcid');
@@ -208,14 +185,9 @@ function init() {
     document.querySelector('#addRow').addEventListener('click', addRowHandler);
     document.querySelector('#deleteRow').addEventListener('click', deleteRowHandler);
     document.querySelector('#exportTo').addEventListener('click', exportToHandler);
-    document.querySelector('#save').addEventListener('click', saveHandler);
+    document.querySelector('#create').addEventListener('click', createHandler);
+    document.querySelector('#update').addEventListener('click', updateHandler);
     document.querySelector('#cancel').addEventListener('click', cancelHandler);
-
-    /*
-    if(isTemplate() === true) {
-        initScreen();
-    }
-    */
 }
 
 window.addEventListener('load', init);

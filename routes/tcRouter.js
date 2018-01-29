@@ -154,7 +154,12 @@ function getTestCaseHtml(testcase) {
         body += '<textarea id="output" enabled cols="100" rows="10">'+ '</textarea><hr />\n';
     }
     body += '<div id="btnitem">\n';
-    body += '<button id="save"> Save </button>\n';
+
+    if(testcase) {
+    body += '<button id="create"> Create </button>\n';
+    } else {
+    body += '<button id="update"> Update </button>\n';
+    }
     body += '<button id="cancel"> Cancel </button>\n';
     body += '</div>\n';
     body += '</body>';
