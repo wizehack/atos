@@ -6,6 +6,12 @@ var VerificationType = null;
 var description = null;
 var output = null;
 var table = null;
+var btnAdd = null;
+var btnDel = null;
+var btnExport = null;
+var btnCreate = null;
+var btnUpdate = null;
+var btnCancel = null;
 
 function addRowHandler() {
     var rowCount = table.rows.length;
@@ -182,12 +188,25 @@ function init() {
     output = document.querySelector('#output');
     table = document.querySelector('#dataTable');
 
-    document.querySelector('#addRow').addEventListener('click', addRowHandler);
-    document.querySelector('#deleteRow').addEventListener('click', deleteRowHandler);
-    document.querySelector('#exportTo').addEventListener('click', exportToHandler);
-    document.querySelector('#create').addEventListener('click', createHandler);
-    document.querySelector('#update').addEventListener('click', updateHandler);
-    document.querySelector('#cancel').addEventListener('click', cancelHandler);
+    btnAdd = document.querySelector('#addRow');
+    btnDel = document.querySelector('#deleteRow');
+    btnExport = document.querySelector('#exportTo');
+    btnCreate = document.querySelector('#create');
+    btnUpdate = document.querySelector('#update');
+    btnCancel = document.querySelector('#cancel');
+
+    if(btnAdd)
+        btnAdd.addEventListener('click', addRowHandler);
+    if(btnDel)
+        btnDel.addEventListener('click', deleteRowHandler);
+    if(btnExport)
+        btnExport.addEventListener('click', exportToHandler);
+    if(btnCreate)
+        btnCreate.addEventListener('click', createHandler);
+    if(btnUpdate)
+        btnUpdate.addEventListener('click', updateHandler);
+    if(btnCancel)
+        btnCancel.addEventListener('click', cancelHandler);
 }
 
 window.addEventListener('load', init);

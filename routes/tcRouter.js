@@ -156,9 +156,9 @@ function getTestCaseHtml(testcase) {
     body += '<div id="btnitem">\n';
 
     if(testcase) {
-    body += '<button id="create"> Create </button>\n';
-    } else {
     body += '<button id="update"> Update </button>\n';
+    } else {
+    body += '<button id="create"> Create </button>\n';
     }
     body += '<button id="cancel"> Cancel </button>\n';
     body += '</div>\n';
