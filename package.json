@@ -8,7 +8,7 @@
     "express": "4.14",
     "mkdirp": "0.5.1",
     "mongodb": "~2.0",
-    "mongoose": "^5.0.2",
+    "mongoose": "~1.4",
     "request": "*",
     "rimraf": "2.5.2"
   },
